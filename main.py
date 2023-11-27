@@ -5,18 +5,21 @@ from PyQt5.QtSql import QSqlDatabase, QSqlTableModel
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget
 from PyQt5 import uic
 
+from main_design import Ui_MainWindow
+from addEditCoffeeForm import Ui_Form
 
-class CoffeeProgram(QMainWindow):
+
+class CoffeeProgram(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi("main.ui", self)
+        self.setupUi(self)
         self.setup_database()
         self.createButton.clicked.connect(self.show_add_widget)
         self.updateButton.clicked.connect(self.update_button)
 
     def setup_database(self):
         self.db = QSqlDatabase.addDatabase('QSQLITE')
-        self.db.setDatabaseName('coffee.sqlite')
+        self.db.setDatabaseName('data/coffee.sqlite')
         self.db.open()
         self.model = QSqlTableModel(self, self.db)
         self.model.setTable('items')
@@ -31,15 +34,15 @@ class CoffeeProgram(QMainWindow):
         self.setup_database()
 
 
-class AddCoffeeForm(QWidget):
+class AddCoffeeForm(QWidget, Ui_Form):
     def __init__(self):
         super().__init__()
-        uic.loadUi("addEditCoffeeForm.ui", self)
+        self.setupUi(self)
         self.submitButton.clicked.connect(self.create_item)
         self.show()
 
     def create_item(self):
-        con = sqlite3.connect("coffee.sqlite")
+        con = sqlite3.connect("data/coffee.sqlite")
         cursor = con.cursor()
         cursor.execute(f"""INSERT INTO items(sort_name,hot,type,description,price,volume) VALUES (
             '{self.sortEdit.text()}','{self.hotEdit.text()}','{self.typeEdit.text()}','{self.descriptionEdit.text()}',
